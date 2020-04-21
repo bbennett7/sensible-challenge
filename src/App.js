@@ -1,10 +1,7 @@
 import React from 'react';
 
 function App() {
-  return (
-    <div> Sensible Forecast
-    </div>
-  );
+  return <div> Sensible Forecast</div>;
 }
 
 export default App;
