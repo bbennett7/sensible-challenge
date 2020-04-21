@@ -3,6 +3,10 @@ import styles from './Home.module.scss';
 import Search from '../../components/Search/Search';
 import DarkSky from '../../api/darksky';
 import Toggle from '../../components/Toggle/Toggle';
+import Forecast from '../../components/Forecast/Forecast';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+
+const moment = require('moment');
 
 class Home extends PureComponent {
   state = {
@@ -30,22 +34,27 @@ class Home extends PureComponent {
 
     this.setState({
       loading: true,
+      error: '',
+      hourlyForecast: [],
     });
 
     const { latInput, longInput } = this.state;
+    let tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
+    tomorrow = `${tomorrow}T00:00:00`;
+
     try {
-      const payload = await DarkSky.getTomorrowsForecast(latInput, longInput);
-      console.log(payload.data.hourly);
+      const payload = await DarkSky.getTomorrowsForecast(latInput, longInput, tomorrow);
 
       const { summary, data } = payload.data.hourly;
       return this.setState({
         loading: false,
         forecastSummary: summary,
-        hourlyForecast: data,
+        hourlyForecast: [...data],
       });
     } catch (err) {
-      // SET STATE WITH ERROR MESSAGE HERE
-      return err;
+      return this.setState({
+        error: err.message,
+      });
     }
   };
 
@@ -57,11 +66,9 @@ class Home extends PureComponent {
     }
 
     return this.setState({
-      activeView,
+      activeView: !activeView,
     });
   };
-
-  renderForecast = async () => {};
 
   render() {
     const { loading, hourlyForecast, forecastSummary, activeView, error } = this.state;
@@ -72,15 +79,19 @@ class Home extends PureComponent {
           <Toggle
             activeView={activeView}
             toggleActiveView={this.toggleActiveView}
-            noData={hourlyForecast.length === 0}
+            noData={!!(hourlyForecast.length === 0)}
           />
-          {!loading && hourlyForecast.length === 0 ? (
+          <div className={styles.summary}>{forecastSummary}</div>
+          {loading ? <LoadingSpinner /> : null}
+          {error === '' && hourlyForecast.length === 0 && !loading ? (
             <div className={styles.noData}>
-              Please enter coordinates to the left to see the temperature.
+              Please enter coordinates to the left to see tomorrow's forecast.
             </div>
           ) : null}
 
-          {hourlyForecast.length > 0 ? this.renderForecast() : null}
+          {hourlyForecast.length > 0 ? (
+            <Forecast hourlyForecast={hourlyForecast} activeView={activeView} />
+          ) : null}
 
           {error !== '' ? <div className={styles.error}>{error}</div> : null}
         </div>
