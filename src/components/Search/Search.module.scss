@@ -4,12 +4,15 @@
 
 .container form {
   margin: 30px;
-  // align-items: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .wrapper {
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .wrapper input {
