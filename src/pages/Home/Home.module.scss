@@ -1,0 +1,26 @@
+@import '../../styles/variables';
+
+.container {
+  margin: 100px 50px 50px 50px;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+}
+
+.forecastWrapper {
+  width: 300px;
+}
+
+.error {
+  color: red;
+  font-family: 'Raleway', sans-serif;
+  text-align: center;
+}
+
+.summary, .noData {
+  color: $swDarkBlue;
+  font-family: 'Raleway', sans-serif;
+  margin-top: 10px;
+  width: 100%;
+  text-align: center;
+}
